@@ -1,15 +1,15 @@
-Endless OSTree Builder (EOB)
+Ubuntu OSTree Builder 
 ============================
 
-This program assembles the Endless OS (EOS) from prebuilt packages and
+This program assembles the Ubuntu OS from prebuilt packages and
 content. Its main functions are:
  1. Assemble packages into ostree
- 2. Publish the ostree repo to a remote server
+ 2. Build and run a container of ostree managed Ubuntu
 
 Design
 ======
 
-EOB is designed to be simple. It is written in bash script and has just
+This builder is designed to be simple. It is written in bash script and has just
 enough flexibility to meet our needs. The simplicity allows us to have a
 complete in-house understanding of the build system, enabling smooth
 organic growth as our requirements evolve. The build master(s) who
@@ -60,7 +60,7 @@ a subsequent build.
 Setup
 =====
 
-Known to work on Debian Wheezy, Ubuntu 13.04 and Ubuntu 13.10.
+Known to work on Ubuntu 22.04
 Required packages:
  * rsync
  * ostree
@@ -72,7 +72,7 @@ Required packages:
 ostree signing
 --------------
 
-EOB signs the ostree commits it makes with GPG. A private keyring must
+Builder signs the ostree commits it makes with GPG. A private keyring must
 be installed in /etc/deb-ostree-builder/gnupg and the key ID must be set
 in the configuration.
 
@@ -163,8 +163,14 @@ without the section in the variable name.
 Execution
 =========
 
-To run EOB, use the deb-ostree-builder script, optionally with a branch name:
- # ./deb-ostree-builder [options] master
+1) Build the image:
+```
+sudo docker build -t [REGISTRY]/[USER_NAME]/[REPO_NAME] .
+```
+2 Run the container:
+```
+sudo docker run -it --cap-add SYS_ADMIN --privileged --name [CONTAINER_NAME] [IMAGE_ID]
+```
 
 If no branch name is specified, master is used. If you want to only run
 certain stages, modify the `buildscript` file accordingly before

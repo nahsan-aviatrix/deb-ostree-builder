@@ -7,9 +7,11 @@ run_hooks seed "${EOB_ROOTDIR}"
 
 # FIXME: write own debootstrap script to make image more minimal
 keyring=$(eob_keyring)
-debootstrap --arch=${EOB_ARCH} --keyring="${keyring}" \
+debootstrap --arch=${EOB_ARCH} --foreign --keyring="${keyring}" \
   --components="${EOB_OS_COMPONENTS}" ${EOB_BRANCH} "${EOB_ROOTDIR}" \
   "${EOB_OS_REPO}" "${EOB_DATADIR}"/debootstrap.script
+
+chroot "${EOB_ROOTDIR}" /debootstrap/debootstrap --second-stage
 
 cleanup() {
   eob_umount_all || :
@@ -18,6 +20,7 @@ trap cleanup EXIT
 
 eob_mount -t sysfs sysfs "${EOB_ROOTDIR}"/sys
 eob_mount -t proc proc "${EOB_ROOTDIR}"/proc
+mkdir -p "${EOB_ROOTDIR}"/dev/pts
 eob_mount --bind /dev/pts "${EOB_ROOTDIR}"/dev/pts
 
 # Don't let packages start daemons. From invoke-rc.d(8), exiting 101
